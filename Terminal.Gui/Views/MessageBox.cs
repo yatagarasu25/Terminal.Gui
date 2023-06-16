@@ -9,7 +9,7 @@ namespace Terminal.Gui {
 	/// MessageBox displays a modal message to the user, with a title, a message and a series of options that the user can choose from.
 	/// </summary>
 	/// <para>
-	///   The difference between the <see cref="Query(string, string, string[])"/> and <see cref="ErrorQuery(string, string, string[])"/> 
+	///   The difference between the <see cref="Query(string, string, string[])"/> and <see cref="ErrorQuery(string, string, string[])"/>
 	///   method is the default set of colors used for the message box.
 	/// </para>
 	/// <para>
@@ -262,7 +262,7 @@ namespace Terminal.Gui {
 				}
 
 			}
-			
+
 			Dialog d;
 			d = new Dialog (buttonList.ToArray ()) {
 				Title = title,
@@ -273,12 +273,12 @@ namespace Terminal.Gui {
 
 			if (width != 0) {
 				d.Width = width;
-			} 
-			
+			}
+
 			if (height != 0) {
 				d.Height = height;
 			}
-		
+
 			if (useErrorColors) {
 				d.ColorScheme = Colors.Error;
 			} else {
@@ -296,7 +296,7 @@ namespace Terminal.Gui {
 			};
 			messageLabel.TextFormatter.WordWrap = wrapMessage; // BUGBUG: This does nothing as it's not implemented by TextFormatter!
 			d.Add (messageLabel);
-			
+
 			d.Loaded += (s, e) => {
 				if (width != 0 || height != 0) {
 					return;

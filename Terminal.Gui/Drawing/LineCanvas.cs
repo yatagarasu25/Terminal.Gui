@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,7 +55,7 @@ namespace Terminal.Gui {
 		/// </summary>
 		RoundedDotted,
 		// TODO: Support Ruler
-		///// <summary> 
+		///// <summary>
 		///// The border is drawn as a diagnostic ruler ("|123456789...").
 		///// </summary>
 		//Ruler
@@ -141,7 +140,7 @@ namespace Terminal.Gui {
 		private Rect _cachedBounds;
 
 		/// <summary>
-		/// Gets the rectangle that describes the bounds of the canvas. Location is the coordinates of the 
+		/// Gets the rectangle that describes the bounds of the canvas. Location is the coordinates of the
 		/// line that is furthest left/top and Size is defined by the line that extends the furthest
 		/// right/bottom.
 		/// </summary>
@@ -179,7 +178,7 @@ namespace Terminal.Gui {
 		/// <summary>
 		/// Evaluates the lines that have been added to the canvas and returns a map containing
 		/// the glyphs and their locations. The glyphs are the characters that should be rendered
-		/// so that all lines connect up with the appropriate intersection symbols. 
+		/// so that all lines connect up with the appropriate intersection symbols.
 		/// </summary>
 		/// <param name="inArea">A rectangle to constrain the search by.</param>
 		/// <returns>A map of the points within the canvas that intersect with <paramref name="inArea"/>.</returns>
@@ -210,7 +209,7 @@ namespace Terminal.Gui {
 		/// <summary>
 		/// Evaluates the lines that have been added to the canvas and returns a map containing
 		/// the glyphs and their locations. The glyphs are the characters that should be rendered
-		/// so that all lines connect up with the appropriate intersection symbols. 
+		/// so that all lines connect up with the appropriate intersection symbols.
 		/// </summary>
 		/// <returns>A map of all the points within the canvas.</returns>
 		public Dictionary<Point, Cell> GetCellMap ()
@@ -240,14 +239,14 @@ namespace Terminal.Gui {
 		/// <summary>
 		/// Evaluates the lines that have been added to the canvas and returns a map containing
 		/// the glyphs and their locations. The glyphs are the characters that should be rendered
-		/// so that all lines connect up with the appropriate intersection symbols. 
+		/// so that all lines connect up with the appropriate intersection symbols.
 		/// </summary>
 		/// <returns>A map of all the points within the canvas.</returns>
 		public Dictionary<Point, Rune> GetMap () => GetMap (Bounds);
 
 		/// <summary>
 		/// Returns the contents of the line canvas rendered to a string. The string
-		/// will include all columns and rows, even if <see cref="Bounds"/> has negative coordinates. 
+		/// will include all columns and rows, even if <see cref="Bounds"/> has negative coordinates.
 		/// For example, if the canvas contains a single line that starts at (-1,-1) with a length of 2, the
 		/// rendered string will have a length of 2.
 		/// </summary>
@@ -300,9 +299,9 @@ namespace Terminal.Gui {
 			{
 				SetGlyphs ();
 			}
-			
+
 			/// <summary>
-			/// Sets the glyphs used. Call this method after construction and any time 
+			/// Sets the glyphs used. Call this method after construction and any time
 			/// ConfigurationManager has updated the settings.
 			/// </summary>
 			public abstract void SetGlyphs ();
@@ -925,7 +924,7 @@ namespace Terminal.Gui {
 			}
 
 			/// <summary>
-			/// Gets the rectangle that describes the bounds of the canvas. Location is the coordinates of the 
+			/// Gets the rectangle that describes the bounds of the canvas. Location is the coordinates of the
 			/// line that is furthest left/top and Size is defined by the line that extends the furthest
 			/// right/bottom.
 			/// </summary>

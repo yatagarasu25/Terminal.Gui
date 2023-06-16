@@ -8,23 +8,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using System.Text;
-using Terminal.Gui;
-using static Terminal.Gui.ConfigurationManager;
 
 namespace Terminal.Gui {
 	/// <summary>
-	/// The <see cref="Dialog"/> <see cref="View"/> is a <see cref="Window"/> that by default is centered and contains one 
+	/// The <see cref="Dialog"/> <see cref="View"/> is a <see cref="Window"/> that by default is centered and contains one
 	/// or more <see cref="Button"/>s. It defaults to the <see cref="Colors.Dialog"/> color scheme and has a 1 cell padding around the edges.
 	/// </summary>
 	/// <remarks>
-	///  To run the <see cref="Dialog"/> modally, create the <see cref="Dialog"/>, and pass it to <see cref="Application.Run(Func{Exception, bool})"/>. 
+	///  To run the <see cref="Dialog"/> modally, create the <see cref="Dialog"/>, and pass it to <see cref="Application.Run(Func{Exception, bool})"/>.
 	///  This will execute the dialog until it terminates via the [ESC] or [CTRL-Q] key, or when one of the views
 	///  or buttons added to the dialog calls <see cref="Application.RequestStop"/>.
 	/// </remarks>
 	public class Dialog : Window {
 		/// <summary>
-		/// The default <see cref="ButtonAlignments"/> for <see cref="Dialog"/>. 
+		/// The default <see cref="ButtonAlignments"/> for <see cref="Dialog"/>.
 		/// </summary>
 		/// <remarks>
 		/// This property can be set in a Theme.
@@ -44,23 +41,23 @@ namespace Terminal.Gui {
 		internal List<Button> buttons = new List<Button> ();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Dialog"/> class using <see cref="LayoutStyle.Computed"/> positioning 
+		/// Initializes a new instance of the <see cref="Dialog"/> class using <see cref="LayoutStyle.Computed"/> positioning
 		/// with no <see cref="Button"/>s.
 		/// </summary>
 		/// <remarks>
-		/// By default, <see cref="View.X"/> and <see cref="View.Y"/> are set to <c>Pos.Center ()</c> and <see cref="View.Width"/> and <see cref="View.Height"/> are set 
-		/// to <c>Width = Dim.Percent (85)</c>, centering the Dialog vertically and horizontally. 
+		/// By default, <see cref="View.X"/> and <see cref="View.Y"/> are set to <c>Pos.Center ()</c> and <see cref="View.Width"/> and <see cref="View.Height"/> are set
+		/// to <c>Width = Dim.Percent (85)</c>, centering the Dialog vertically and horizontally.
 		/// </remarks>
 		public Dialog () : this (null) { }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Dialog"/> class using <see cref="LayoutStyle.Computed"/> positioning 
+		/// Initializes a new instance of the <see cref="Dialog"/> class using <see cref="LayoutStyle.Computed"/> positioning
 		/// and an optional set of <see cref="Button"/>s to display
 		/// </summary>
 		/// <param name="buttons">Optional buttons to lay out at the bottom of the dialog.</param>
 		/// <remarks>
-		/// By default, <see cref="View.X"/> and <see cref="View.Y"/> are set to <c>Pos.Center ()</c> and <see cref="View.Width"/> and <see cref="View.Height"/> are set 
-		/// to <c>Width = Dim.Percent (85)</c>, centering the Dialog vertically and horizontally. 
+		/// By default, <see cref="View.X"/> and <see cref="View.Y"/> are set to <c>Pos.Center ()</c> and <see cref="View.Width"/> and <see cref="View.Height"/> are set
+		/// to <c>Width = Dim.Percent (85)</c>, centering the Dialog vertically and horizontally.
 		/// </remarks>
 		public Dialog (params Button [] buttons) : base ()
 		{
@@ -148,8 +145,8 @@ namespace Terminal.Gui {
 		}
 
 		/// <summary>
-		/// Determines how the <see cref="Dialog"/> <see cref="Button"/>s are aligned along the 
-		/// bottom of the dialog. 
+		/// Determines how the <see cref="Dialog"/> <see cref="Button"/>s are aligned along the
+		/// bottom of the dialog.
 		/// </summary>
 		public ButtonAlignments ButtonAlignment { get; set; }
 
@@ -188,7 +185,7 @@ namespace Terminal.Gui {
 						button.X = Pos.AnchorEnd (shiftLeft);
 					} else {
 						if (i == 0) {
-							// first (leftmost) button 
+							// first (leftmost) button
 							var left = Bounds.Width;
 							button.X = Pos.AnchorEnd (left);
 						} else {

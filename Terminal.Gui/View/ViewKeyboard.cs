@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
 namespace Terminal.Gui {
-	public partial class View  {
+	public partial class View {
 		ShortcutHelper _shortcutHelper;
 
 		/// <summary>
@@ -38,7 +37,7 @@ namespace Terminal.Gui {
 		}
 
 		/// <summary>
-		/// Gets or sets the specifier character for the hotkey (e.g. '_'). Set to '\xffff' to disable hotkey support for this View instance. The default is '\xffff'. 
+		/// Gets or sets the specifier character for the hotkey (e.g. '_'). Set to '\xffff' to disable hotkey support for this View instance. The default is '\xffff'.
 		/// </summary>
 		public virtual Rune HotKeySpecifier {
 			get {
@@ -145,7 +144,7 @@ namespace Terminal.Gui {
 		bool _tabStop = true;
 
 		/// <summary>
-		/// This only be <see langword="true"/> if the <see cref="CanFocus"/> is also <see langword="true"/> 
+		/// This only be <see langword="true"/> if the <see cref="CanFocus"/> is also <see langword="true"/>
 		/// and the focus can be avoided by setting this to <see langword="false"/>
 		/// </summary>
 		public bool TabStop {
@@ -159,7 +158,7 @@ namespace Terminal.Gui {
 		}
 
 		int _oldTabIndex;
-		
+
 		/// <summary>
 		/// Invoked when a character key is pressed and occurs after the key up event.
 		/// </summary>
@@ -198,21 +197,21 @@ namespace Terminal.Gui {
 
 				foreach (var command in KeyBindings [keyEvent.Key]) {
 
-					if (!CommandImplementations.ContainsKey (command)) {
-						throw new NotSupportedException ($"A KeyBinding was set up for the command {command} ({keyEvent.Key}) but that command is not supported by this View ({GetType ().Name})");
-					}
+					try {
+						// each command has its own return value
+						var thisReturn = InvokeCommand (command);
 
-					// each command has its own return value
-					var thisReturn = CommandImplementations [command] ();
+						// if we haven't got anything yet, the current command result should be used
+						if (toReturn == null) {
+							toReturn = thisReturn;
+						}
 
-					// if we haven't got anything yet, the current command result should be used
-					if (toReturn == null) {
-						toReturn = thisReturn;
-					}
-
-					// if ever see a true then that's what we will return
-					if (thisReturn ?? false) {
-						toReturn = true;
+						// if ever see a true then that's what we will return
+						if (thisReturn ?? false) {
+							toReturn = true;
+						}
+					} catch (NotSupportedException e) {
+						throw new NotSupportedException ($"A KeyBinding was set up for the command {command} ({keyEvent.Key}) but ", e);
 					}
 				}
 			}
@@ -297,6 +296,19 @@ namespace Terminal.Gui {
 			foreach (var kvp in KeyBindings.Where (kvp => kvp.Value.SequenceEqual (command)).ToArray ()) {
 				KeyBindings.Remove (kvp.Key);
 			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="command"></param>
+		public bool? InvokeCommand (Command command)
+		{
+			if (!CommandImplementations.ContainsKey (command)) {
+				throw new NotSupportedException ($"That command is not supported by this View ({GetType ().Name})");
+			}
+
+			return CommandImplementations [command] ();
 		}
 
 		/// <summary>
@@ -449,7 +461,7 @@ namespace Terminal.Gui {
 
 			return false;
 		}
-		
+
 		void SetHotKey ()
 		{
 			if (TextFormatter == null) {
