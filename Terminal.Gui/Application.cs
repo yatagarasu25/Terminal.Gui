@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Linq;
 using System.Globalization;
-using System.Reflection;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text.Json.Serialization;
-using static Terminal.Gui.ConfigurationManager;
+using System.Threading;
+using SystemEx;
 
 namespace Terminal.Gui {
 	/// <summary>
@@ -14,7 +14,7 @@ namespace Terminal.Gui {
 	/// </summary>
 	/// <example>
 	/// <code>
-	/// // A simple Terminal.Gui app that creates a window with a frame and title with 
+	/// // A simple Terminal.Gui app that creates a window with a frame and title with
 	/// // 5 rows/columns of padding.
 	/// Application.Init();
 	/// var win = new Window ($"Example App ({Application.QuitKey} to quit)") {
@@ -62,15 +62,15 @@ namespace Terminal.Gui {
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// If <see langword="false"/> (the default) the height of the Terminal.Gui application (<see cref="ConsoleDriver.Rows"/>) 
-		/// tracks to the height of the visible console view when the console is resized. In this case 
+		/// If <see langword="false"/> (the default) the height of the Terminal.Gui application (<see cref="ConsoleDriver.Rows"/>)
+		/// tracks to the height of the visible console view when the console is resized. In this case
 		/// scrolling in the console will be disabled and all <see cref="ConsoleDriver.Rows"/> will remain visible.
 		/// </para>
 		/// <para>
-		/// If <see langword="true"/> then height of the Terminal.Gui application <see cref="ConsoleDriver.Rows"/> only tracks 
-		/// the height of the visible console view when the console is made larger (the application will only grow in height, never shrink). 
+		/// If <see langword="true"/> then height of the Terminal.Gui application <see cref="ConsoleDriver.Rows"/> only tracks
+		/// the height of the visible console view when the console is made larger (the application will only grow in height, never shrink).
 		/// In this case console scrolling is enabled and the contents (<see cref="ConsoleDriver.Rows"/> high) will scroll
-		/// as the console scrolls. 
+		/// as the console scrolls.
 		/// </para>
 		/// This API was previously named 'HeightAsBuffer` but was renamed to make its purpose more clear.
 		/// </remarks>
@@ -122,33 +122,33 @@ namespace Terminal.Gui {
 		#region Initialization (Init/Shutdown)
 
 		/// <summary>
-		/// Initializes a new instance of <see cref="Terminal.Gui"/> Application. 
+		/// Initializes a new instance of <see cref="Terminal.Gui"/> Application.
 		/// </summary>
 		/// <para>
 		/// Call this method once per instance (or after <see cref="Shutdown"/> has been called).
 		/// </para>
 		/// <para>
-		/// This function loads the right <see cref="ConsoleDriver"/> for the platform, 
+		/// This function loads the right <see cref="ConsoleDriver"/> for the platform,
 		/// Creates a <see cref="Toplevel"/>. and assigns it to <see cref="Top"/>
 		/// </para>
 		/// <para>
-		/// <see cref="Shutdown"/> must be called when the application is closing (typically after <see cref="Run(Func{Exception, bool})"/> has 
+		/// <see cref="Shutdown"/> must be called when the application is closing (typically after <see cref="Run(Func{Exception, bool})"/> has
 		/// returned) to ensure resources are cleaned up and terminal settings restored.
 		/// </para>
 		/// <para>
-		/// The <see cref="Run{T}(Func{Exception, bool}, ConsoleDriver, IMainLoopDriver)"/> function 
+		/// The <see cref="Run{T}(Func{Exception, bool}, ConsoleDriver, IMainLoopDriver)"/> function
 		/// combines <see cref="Init(ConsoleDriver, IMainLoopDriver)"/> and <see cref="Run(Toplevel, Func{Exception, bool})"/>
-		/// into a single call. An applciation cam use <see cref="Run{T}(Func{Exception, bool}, ConsoleDriver, IMainLoopDriver)"/> 
+		/// into a single call. An applciation cam use <see cref="Run{T}(Func{Exception, bool}, ConsoleDriver, IMainLoopDriver)"/>
 		/// without explicitly calling <see cref="Init(ConsoleDriver, IMainLoopDriver)"/>.
 		/// </para>
 		/// <param name="driver">
 		/// The <see cref="ConsoleDriver"/> to use. If not specified the default driver for the
 		/// platform will be used (see <see cref="WindowsDriver"/>, <see cref="CursesDriver"/>, and <see cref="NetDriver"/>).</param>
 		/// <param name="mainLoopDriver">
-		/// Specifies the <see cref="MainLoop"/> to use. 
+		/// Specifies the <see cref="MainLoop"/> to use.
 		/// Must not be <see langword="null"/> if <paramref name="driver"/> is not <see langword="null"/>.
 		/// </param>
-		public static void Init (ConsoleDriver driver = null, IMainLoopDriver mainLoopDriver = null) => InternalInit (() => Toplevel.Create (), driver, mainLoopDriver);
+		public static IDisposable Init (ConsoleDriver driver = null, IMainLoopDriver mainLoopDriver = null) => InternalInit (() => Toplevel.Create (), driver, mainLoopDriver);
 
 		internal static bool _initialized = false;
 		internal static int _mainThreadId = -1;
@@ -156,15 +156,15 @@ namespace Terminal.Gui {
 		// INTERNAL function for initializing an app with a Toplevel factory object, driver, and mainloop.
 		//
 		// Called from:
-		// 
+		//
 		// Init() - When the user wants to use the default Toplevel. calledViaRunT will be false, causing all state to be reset.
 		// Run<T>() - When the user wants to use a custom Toplevel. calledViaRunT will be true, enabling Run<T>() to be called without calling Init first.
 		// Unit Tests - To initialize the app with a custom Toplevel, using the FakeDriver. calledViaRunT will be false, causing all state to be reset.
-		// 
+		//
 		// calledViaRunT: If false (default) all state will be reset. If true the state will not be reset.
-		internal static void InternalInit (Func<Toplevel> topLevelFactory, ConsoleDriver driver = null, IMainLoopDriver mainLoopDriver = null, bool calledViaRunT = false)
+		internal static IDisposable InternalInit (Func<Toplevel> topLevelFactory, ConsoleDriver driver = null, IMainLoopDriver mainLoopDriver = null, bool calledViaRunT = false)
 		{
-			if (_initialized && driver == null) return;
+			if (_initialized && driver == null) return DisposableLock.empty;
 
 			if (_initialized) {
 				throw new InvalidOperationException ("Init has already been called and must be bracketed by Shutdown.");
@@ -183,7 +183,7 @@ namespace Terminal.Gui {
 			// Start the process of configuration management.
 			// Note that we end up calling LoadConfigurationFromAllSources
 			// multiple times. We need to do this because some settings are only
-			// valid after a Driver is loaded. In this cases we need just 
+			// valid after a Driver is loaded. In this cases we need just
 			// `Settings` so we can determine which driver to use.
 			ConfigurationManager.Load (true);
 			ConfigurationManager.Apply ();
@@ -241,6 +241,8 @@ namespace Terminal.Gui {
 			_cachedSupportedCultures = GetSupportedCultures ();
 			_mainThreadId = Thread.CurrentThread.ManagedThreadId;
 			_initialized = true;
+
+			return DisposableLock.Lock (Shutdown);
 		}
 
 
@@ -293,7 +295,7 @@ namespace Terminal.Gui {
 			_lastMouseOwnerView = null;
 
 			// Reset synchronization context to allow the user to run async/await,
-			// as the main loop has been ended, the synchronization context from 
+			// as the main loop has been ended, the synchronization context from
 			// gui.cs does no longer process any callbacks. See #1084 for more details:
 			// (https://github.com/gui-cs/Terminal.Gui/issues/1084).
 			SynchronizationContext.SetSynchronizationContext (syncContext: null);
@@ -304,7 +306,7 @@ namespace Terminal.Gui {
 		#region Run (Begin, Run, End)
 
 		/// <summary>
-		/// Notify that a new <see cref="RunState"/> was created (<see cref="Begin(Toplevel)"/> was called). The token is created in 
+		/// Notify that a new <see cref="RunState"/> was created (<see cref="Begin(Toplevel)"/> was called). The token is created in
 		/// <see cref="Begin(Toplevel)"/> and this event will be fired before that function exits.
 		/// </summary>
 		/// <remarks>
@@ -442,13 +444,13 @@ namespace Terminal.Gui {
 		}
 
 		/// <summary>
-		/// Runs the application by calling <see cref="Run(Toplevel, Func{Exception, bool})"/> 
+		/// Runs the application by calling <see cref="Run(Toplevel, Func{Exception, bool})"/>
 		/// with a new instance of the specified <see cref="Toplevel"/>-derived class.
 		/// <para>
 		/// Calling <see cref="Init(ConsoleDriver, IMainLoopDriver)"/> first is not needed as this function will initialize the application.
 		/// </para>
 		/// <para>
-		/// <see cref="Shutdown"/> must be called when the application is closing (typically after Run> has 
+		/// <see cref="Shutdown"/> must be called when the application is closing (typically after Run> has
 		/// returned) to ensure resources are cleaned up and terminal settings restored.
 		/// </para>
 		/// </summary>
@@ -458,7 +460,7 @@ namespace Terminal.Gui {
 		/// <param name="errorHandler"></param>
 		/// <param name="driver">The <see cref="ConsoleDriver"/> to use. If not specified the default driver for the
 		/// platform will be used (<see cref="WindowsDriver"/>, <see cref="CursesDriver"/>, or <see cref="NetDriver"/>).
-		/// Must be <see langword="null"/> if <see cref="Init(ConsoleDriver, IMainLoopDriver)"/> has already been called. 
+		/// Must be <see langword="null"/> if <see cref="Init(ConsoleDriver, IMainLoopDriver)"/> has already been called.
 		/// </param>
 		/// <param name="mainLoopDriver">Specifies the <see cref="MainLoop"/> to use.</param>
 		public static void Run<T> (Func<Exception, bool> errorHandler = null, ConsoleDriver driver = null, IMainLoopDriver mainLoopDriver = null) where T : Toplevel, new()
@@ -503,16 +505,16 @@ namespace Terminal.Gui {
 		///   and then calling <see cref="End(RunState)"/>.
 		///  </para>
 		///  <para>
-		///   Alternatively, to have a program control the main loop and 
+		///   Alternatively, to have a program control the main loop and
 		///   process events manually, call <see cref="Begin(Toplevel)"/> to set things up manually and then
 		///   repeatedly call <see cref="RunLoop(RunState, bool)"/> with the wait parameter set to false. By doing this
 		///   the <see cref="RunLoop(RunState, bool)"/> method will only process any pending events, timers, idle handlers and
 		///   then return control immediately.
 		///  </para>
 		///  <para>
-		///   RELEASE builds only: When <paramref name="errorHandler"/> is <see langword="null"/> any exeptions will be rethrown. 
-		///   Otherwise, if <paramref name="errorHandler"/> will be called. If <paramref name="errorHandler"/> 
-		///   returns <see langword="true"/> the <see cref="RunLoop(RunState, bool)"/> will resume; otherwise 
+		///   RELEASE builds only: When <paramref name="errorHandler"/> is <see langword="null"/> any exeptions will be rethrown.
+		///   Otherwise, if <paramref name="errorHandler"/> will be called. If <paramref name="errorHandler"/>
+		///   returns <see langword="true"/> the <see cref="RunLoop(RunState, bool)"/> will resume; otherwise
 		///   this method will exit.
 		///  </para>
 		/// </remarks>
@@ -567,7 +569,7 @@ namespace Terminal.Gui {
 		}
 
 		/// <summary>
-		///  This event is raised on each iteration of the <see cref="MainLoop"/>. 
+		///  This event is raised on each iteration of the <see cref="MainLoop"/>.
 		/// </summary>
 		/// <remarks>
 		///  See also <see cref="Timeout"/>
@@ -636,7 +638,7 @@ namespace Terminal.Gui {
 		///  Use the <paramref name="wait"/> parameter to control whether this is a blocking or non-blocking call.
 		/// </remarks>
 		/// <param name="state">The state returned by the <see cref="Begin(Toplevel)"/> method.</param>
-		/// <param name="wait">By default this is <see langword="true"/> which will execute the loop waiting for events, 
+		/// <param name="wait">By default this is <see langword="true"/> which will execute the loop waiting for events,
 		/// if set to <see langword="false"/>, a single iteration will execute.</param>
 		public static void RunLoop (RunState state, bool wait = true)
 		{
@@ -747,7 +749,7 @@ namespace Terminal.Gui {
 		///  This will cause <see cref="Application.Run(Func{Exception, bool})"/> to return.
 		///  </para>
 		///  <para>
-		///   Calling <see cref="Application.RequestStop"/> is equivalent to setting the <see cref="Toplevel.Running"/> property 
+		///   Calling <see cref="Application.RequestStop"/> is equivalent to setting the <see cref="Toplevel.Running"/> property
 		///   on the currently running <see cref="Toplevel"/> to false.
 		///  </para>
 		/// </remarks>
@@ -837,7 +839,7 @@ namespace Terminal.Gui {
 				runState.Toplevel.OnUnloaded ();
 			}
 
-			// End the RunState.Toplevel 
+			// End the RunState.Toplevel
 			// First, take it off the Toplevel Stack
 			if (_toplevels.Count > 0) {
 				if (_toplevels.Peek () != runState.Toplevel) {
@@ -851,7 +853,7 @@ namespace Terminal.Gui {
 			// Notify that it is closing
 			runState.Toplevel?.OnClosed (runState.Toplevel);
 
-			// If there is a OverlappedTop that is not the RunState.Toplevel then runstate.TopLevel 
+			// If there is a OverlappedTop that is not the RunState.Toplevel then runstate.TopLevel
 			// is a child of MidTop and we should notify the OverlappedTop that it is closing
 			if (OverlappedTop != null && !(runState.Toplevel).Modal && runState.Toplevel != OverlappedTop) {
 				OverlappedTop.OnChildClosed (runState.Toplevel);
@@ -888,7 +890,7 @@ namespace Terminal.Gui {
 		public static Toplevel Top { get; private set; }
 
 		/// <summary>
-		/// The current <see cref="Toplevel"/> object. This is updated when <see cref="Application.Run(Func{Exception, bool})"/> 
+		/// The current <see cref="Toplevel"/> object. This is updated when <see cref="Application.Run(Func{Exception, bool})"/>
 		/// enters and leaves to point to the current <see cref="Toplevel"/> .
 		/// </summary>
 		/// <value>The current.</value>
