@@ -170,14 +170,14 @@ namespace Terminal.Gui {
 	/// Attributes are used as elements that contain both a foreground and a background or platform specific features.
 	/// </summary>
 	/// <remarks>
-	///   <see cref="Attribute"/>s are needed to map colors to terminal capabilities that might lack colors. 
+	///   <see cref="Attribute"/>s are needed to map colors to terminal capabilities that might lack colors.
 	///   They encode both the foreground and the background color and are used in the <see cref="ColorScheme"/>
 	///   class to define color schemes that can be used in an application.
 	/// </remarks>
 	[JsonConverter (typeof (AttributeJsonConverter))]
 	public struct Attribute {
 		/// <summary>
-		/// The <see cref="ConsoleDriver"/>-specific color attribute value. If <see cref="Initialized"/> is <see langword="false"/> 
+		/// The <see cref="ConsoleDriver"/>-specific color attribute value. If <see cref="Initialized"/> is <see langword="false"/>
 		/// the value of this property is invalid (typically because the Attribute was created before a driver was loaded)
 		/// and the attribute should be re-made (see <see cref="Make(Color, Color)"/>) before it is used.
 		/// </summary>
@@ -303,7 +303,7 @@ namespace Terminal.Gui {
 		}
 
 		/// <summary>
-		/// If <see langword="true"/> the attribute has been initialized by a <see cref="ConsoleDriver"/> and 
+		/// If <see langword="true"/> the attribute has been initialized by a <see cref="ConsoleDriver"/> and
 		/// thus has <see cref="Value"/> that is valid for that driver. If <see langword="false"/> the <see cref="Foreground"/>
 		/// and <see cref="Background"/> colors may have been set '-1' but
 		/// the attribute has not been mapped to a <see cref="ConsoleDriver"/> specific color value.
@@ -323,7 +323,7 @@ namespace Terminal.Gui {
 	}
 
 	/// <summary>
-	/// Defines the color <see cref="Attribute"/>s for common visible elements in a <see cref="View"/>. 
+	/// Defines the color <see cref="Attribute"/>s for common visible elements in a <see cref="View"/>.
 	/// Containers such as <see cref="Window"/> and <see cref="FrameView"/> use <see cref="ColorScheme"/> to determine
 	/// the colors used by sub-views.
 	/// </summary>
@@ -339,7 +339,7 @@ namespace Terminal.Gui {
 		Attribute _disabled = new Attribute (Color.White, Color.Black);
 
 		/// <summary>
-		/// Used by <see cref="Colors.SetColorScheme(ColorScheme, string)"/> and <see cref="Colors.GetColorScheme(string)"/> to track which ColorScheme 
+		/// Used by <see cref="Colors.SetColorScheme(ColorScheme, string)"/> and <see cref="Colors.GetColorScheme(string)"/> to track which ColorScheme
 		/// is being accessed.
 		/// </summary>
 		internal string schemeBeingSet = "";
@@ -545,8 +545,8 @@ namespace Terminal.Gui {
 		/// </summary>
 		public static Dictionary<string, ColorScheme> Create ()
 		{
-			// Use reflection to dynamically create the default set of ColorSchemes from the list defined 
-			// by the class. 
+			// Use reflection to dynamically create the default set of ColorSchemes from the list defined
+			// by the class.
 			return typeof (Colors).GetProperties ()
 				.Where (p => p.PropertyType == typeof (ColorScheme))
 				.Select (p => new KeyValuePair<string, ColorScheme> (p.Name, new ColorScheme ()))
@@ -625,7 +625,7 @@ namespace Terminal.Gui {
 	/// <summary>
 	/// Cursors Visibility that are displayed
 	/// </summary>
-	// 
+	//
 	// Hexa value are set as 0xAABBCCDD where :
 	//
 	//     AA stand for the TERMINFO DECSUSR parameter value to be used under Linux & MacOS
@@ -681,7 +681,7 @@ namespace Terminal.Gui {
 	}
 
 	/// <summary>
-	/// ConsoleDriver is an abstract class that defines the requirements for a console driver.  
+	/// ConsoleDriver is an abstract class that defines the requirements for a console driver.
 	/// There are currently three implementations: <see cref="CursesDriver"/> (for Unix and Mac), <see cref="WindowsDriver"/>, and <see cref="NetDriver"/> that uses the .NET Console API.
 	/// </summary>
 	public abstract class ConsoleDriver {
@@ -718,15 +718,15 @@ namespace Terminal.Gui {
 
 		/// <summary>
 		/// <para>
-		/// If <see langword="false"/> (the default) the height of the Terminal.Gui application (<see cref="Rows"/>) 
-		/// tracks to the height of the visible console view when the console is resized. In this case 
+		/// If <see langword="false"/> (the default) the height of the Terminal.Gui application (<see cref="Rows"/>)
+		/// tracks to the height of the visible console view when the console is resized. In this case
 		/// scrolling in the console will be disabled and all <see cref="Rows"/> will remain visible.
 		/// </para>
 		/// <para>
-		/// If <see langword="true"/> then height of the Terminal.Gui application <see cref="Rows"/> only tracks 
-		/// the height of the visible console view when the console is made larger (the application will only grow in height, never shrink). 
+		/// If <see langword="true"/> then height of the Terminal.Gui application <see cref="Rows"/> only tracks
+		/// the height of the visible console view when the console is made larger (the application will only grow in height, never shrink).
 		/// In this case console scrolling is enabled and the contents (<see cref="Rows"/> high) will scroll
-		/// as the console scrolls. 
+		/// as the console scrolls.
 		/// </para>
 		/// </summary>
 		/// <remarks>
@@ -764,13 +764,13 @@ namespace Terminal.Gui {
 			}
 			return true;
 		}
-		
+
 		/// <summary>
 		/// Adds the specified rune to the display at the current cursor position.
 		/// </summary>
 		/// <param name="rune">Rune to add.</param>
 		public abstract void AddRune (Rune rune);
-		
+
 		/// <summary>
 		/// Ensures that the column and line are in a valid range from the size of the driver.
 		/// </summary>
@@ -848,7 +848,7 @@ namespace Terminal.Gui {
 		public abstract void UpdateScreen ();
 
 		/// <summary>
-		/// The current attribute the driver is using. 
+		/// The current attribute the driver is using.
 		/// </summary>
 		public virtual Attribute CurrentAttribute {
 			get => currentAttribute;
@@ -945,12 +945,12 @@ namespace Terminal.Gui {
 			/// </summary>
 			Off = 0b_0000_0000,
 			/// <summary>
-			/// When enabled, <see cref="Frame.OnDrawFrames"/> will draw a 
+			/// When enabled, <see cref="Frame.OnDrawFrames"/> will draw a
 			/// ruler in the frame for any side with a padding value greater than 0.
 			/// </summary>
 			FrameRuler = 0b_0000_0001,
 			/// <summary>
-			/// When enabled, <see cref="Frame.OnDrawFrames"/> will draw a 
+			/// When enabled, <see cref="Frame.OnDrawFrames"/> will draw a
 			/// 'L', 'R', 'T', and 'B' when clearing <see cref="Thickness"/>'s instead of ' '.
 			/// </summary>
 			FramePadding = 0b_0000_0010,
@@ -988,7 +988,7 @@ namespace Terminal.Gui {
 		public abstract void StopReportingMouseMoves ();
 
 		/// <summary>
-		/// Disables the cooked event processing from the mouse driver. 
+		/// Disables the cooked event processing from the mouse driver.
 		/// At startup, it is assumed mouse events are cooked. Not implemented by any driver: See Issue #2300.
 		/// </summary>
 		public abstract void UncookMouse ();
@@ -1023,7 +1023,7 @@ namespace Terminal.Gui {
 		public abstract Attribute MakeColor (Color foreground, Color background);
 
 		/// <summary>
-		/// Ensures all <see cref="Attribute"/>s in <see cref="Colors.ColorSchemes"/> are correctly 
+		/// Ensures all <see cref="Attribute"/>s in <see cref="Colors.ColorSchemes"/> are correctly
 		/// initialized by the driver.
 		/// </summary>
 		/// <remarks>

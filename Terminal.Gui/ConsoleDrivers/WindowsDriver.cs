@@ -621,7 +621,7 @@ namespace Terminal.Gui {
 			}
 		}
 
-#if false      // Not needed on the constructor. Perhaps could be used on resizing. To study.                                                                                     
+#if false      // Not needed on the constructor. Perhaps could be used on resizing. To study.
 		[DllImport ("kernel32.dll", ExactSpelling = true)]
 		static extern IntPtr GetConsoleWindow ();
 
@@ -700,6 +700,19 @@ namespace Terminal.Gui {
 		[DllImport ("kernel32.dll", SetLastError = true)]
 		static extern Coord GetLargestConsoleWindowSize (
 			IntPtr hConsoleOutput);
+
+		[StructLayout (LayoutKind.Sequential)]
+		public struct CONSOLE_FONT_INFO {
+			public uint nFont;
+			public Coord dwFontSize;
+		}
+
+		[DllImport ("kernel32.dll", SetLastError = true)]
+		static extern bool GetCurrentConsoleFont (
+			IntPtr hConsoleOutput,
+			bool bMaximumWindow,
+			ref CONSOLE_FONT_INFO consoleCurrentFont
+			);
 	}
 
 	internal class WindowsDriver : ConsoleDriver {
@@ -1446,7 +1459,7 @@ namespace Terminal.Gui {
 				// ESC [ ? 1048 l  Restore cursor position
 				// ESC [ ? 1049 h  Save cursor position and activate xterm alternative buffer (no backscroll)
 				// ESC [ ? 1049 l  Restore cursor position and restore xterm working buffer (with backscroll)
-				// Per Issue #2264 using the alterantive screen buffer is required for Windows Terminal to not 
+				// Per Issue #2264 using the alterantive screen buffer is required for Windows Terminal to not
 				// wipe out the backscroll buffer when the application exits.
 				Console.Out.Write ("\x1b[?1047h");
 
