@@ -241,6 +241,10 @@ namespace Terminal.Gui {
 		/// </summary>
 		[SerializableConfigurationProperty (Scope = typeof (ThemeScope))]
 		public static LineStyle DefaultBorderStyle { get; set; } = LineStyle.Single;
+		[SerializableConfigurationProperty (Scope = typeof (ThemeScope))]
+		public static Dim DefaultWidth { get; set; } = Dim.Percent (60);
+		[SerializableConfigurationProperty (Scope = typeof (ThemeScope))]
+		public static Dim DefaultHeight { get; set; } = 5; // Border + one line of text + vspace + buttons
 
 		static int QueryFull (bool useErrorColors, int width, int height, string title, string message,
 			int defaultButton = 0, bool wrapMessage = true, params string [] buttons)
@@ -267,8 +271,8 @@ namespace Terminal.Gui {
 			d = new Dialog (buttonList.ToArray ()) {
 				Title = title,
 				BorderStyle = DefaultBorderStyle,
-				Width = Dim.Percent (60),
-				Height = 5 // Border + one line of text + vspace + buttons
+				Width = DefaultWidth,
+				Height = DefaultHeight
 			};
 
 			if (width != 0) {
